@@ -474,6 +474,14 @@ hello-world:latest                c567b231f656       25.9kB         9.49kB    U
 nginx:latest                      5ab5b0b01097        243MB         66.8MB
 ubuntu:latest                     6a06111c3b0a        163MB         45.9MB    U
 
+
+```
+
+
+### 포트 매핑을 통한 서비스 접속 검증
+
+```
+# 포트 매핑은 4000:80 으로 설정
 PS C:\Users\works> docker run -d --name custom-nginx-container -p 4000:80 custom-nginx
 50e7fe9b28bc0758071ae409e1e8ae7f1317d955a589c27ba2d782d61cb1123c
 
@@ -484,16 +492,90 @@ CONTAINER ID   IMAGE          COMMAND                  CREATED             STATU
 
 ```
 
+#### 웹서버 접속 화면
+![hello-world 실행 결과](docs/images/localhost.png)
+포트번호를 4000으로 설정하였으므로 localhost:4000 으로 접속하였음을 확인 가능함
 
-### 포트 매핑을 통한 서비스 접속 검증
 
 
 
 ### 바인드 마운트 및 Docker 볼륨의 동작과 데이터 영속성 검증
 
+```
+PS C:\Users\works> # 도커 볼륨 생성
+PS C:\Users\works> docker volume create test-data
+test-data
+PS C:\Users\works> # 도커 볼륨 생성 확인
+
+PS C:\Users\works> docker volume ls
+DRIVER    VOLUME NAME
+local     test-data
+
+PS C:\Users\works> # 컨테이너 생성
+PS C:\Users\works> docker run -d --name nginx-volume -p 8081:80 --mount type=volume,source=test-data,target=/usr/share/nginx/html nginx
+aeed86e5e8e27ea3e1ff168ae5f78e9bb134f2efd7b64dd15859d36cc3be059a
+
+
+PS C:\Users\works> docker exec -it nginx-volume bash # 컨테이너 내부에 접속하여 파일 내용 수정
+root@aeed86e5e8e2:/# echo '<h1>Docker Volume Persistence Test</h1>' > /usr/share/nginx/html/index.html
+root@aeed86e5e8e2:/# cat /usr/share/nginx/html/index.html
+<h1>Docker Volume Persistence Test</h1>  # 내용이 변경됬음을 확인
+root@aeed86e5e8e2:/# exit
+
+# 기존에 생성했던 컨테이너 정지/삭제
+PS C:\Users\works> docker stop nginx-volume
+nginx-volume
+PS C:\Users\works> docker rm nginx-volume
+nginx-volume
+PS C:\Users\works> docker ps -a
+CONTAINER ID   IMAGE          COMMAND                  CREATED       STATUS                     PORTS     NAMES
+50e7fe9b28bc   custom-nginx   "/docker-entrypoint.…"   2 hours ago   Exited (0) 2 hours ago               custom-nginx-container
+449035724ae3   ubuntu         "/bin/bash"              4 hours ago   Exited (137) 2 hours ago             ubuntu-test
+127e89eb652c   hello-world    "/hello"                 4 hours ago   Exited (0) 4 hours ago               frosty_kirch
+
+# 같은 볼륨을 대상으로 컨테이너 생성 및 볼륨 영속성 검증
+PS C:\Users\works> docker run -d --name nginx-volume2 -p 8082:80 --mount type=volume,source=test-data,target=/usr/share/nginx/html nginx
+5446aa673c622d68d6be25e1d1da2e22e51d9e9848295ff818f2dac2c0428550
+PS C:\Users\works> docker exec -it nginx-volume2 bash
+root@5446aa673c62:/# cat /usr/share/nginx/html/index.html
+<h1>Docker Volume Persistence Test</h1>
+root@5446aa673c62:/# exit
+exit
+
+```
+
 
 ### Git/GitHub를 활용한 버전 관리 및 저장소 연동
 
+#### Git 사용자 정보/기본 브랜치 설정
+```
+PS C:\Users\works> git config --global user.name "Soo-Young-Jung"
+PS C:\Users\works> git config --global user.email "kscorponok@gmail.com"
+PS C:\Users\works> git config --global init.defaultBranch main
+
+PS C:\Users\works> git config --list
+diff.astextplain.textconv=astextplain
+filter.lfs.clean=git-lfs clean -- %f
+filter.lfs.smudge=git-lfs smudge -- %f
+filter.lfs.process=git-lfs filter-process
+filter.lfs.required=true
+http.sslbackend=schannel
+core.autocrlf=true
+core.fscache=true
+core.symlinks=false
+pull.rebase=false
+credential.helper=manager
+credential.https://dev.azure.com.usehttppath=true
+init.defaultbranch=master
+core.editor="C:\Users\works\AppData\Local\Programs\Microsoft VS Code\bin\code" --wait
+user.name=Soo-Young-Jung
+user.email=kscorponok@gmail.com
+init.defaultbranch=main
+```
+
+
+#### 코드저장소 연동 증거
+![hello-world 실행 결과](docs/images/localhost.png)
 
 
 ## 5. 트러블슈팅
