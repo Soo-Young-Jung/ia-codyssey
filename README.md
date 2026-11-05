@@ -575,11 +575,19 @@ init.defaultbranch=main
 
 
 #### 코드저장소 연동 증거
-![hello-world 실행 결과](docs/images/localhost.png)
+![코드저장소 연동 증거](docs/images/code_repository.png)
 
 
 ## 5. 트러블슈팅
 
+### 5-1. docker 명령어 실행 문제
+
+```
+PS C:\Users\works> docker ps
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+```
+- 문제 : 도커 명령어 실행시 작동을 실패하는 문제
+- 원인 및 조치 : Docker Desktop 이 실행되지 않으면 도커 관련 명령어가 실행되지 않는 문제임을 확인, docker 관련 작업시 Docker Desktop 을 미리 실행하도록 조치
 
 
 
