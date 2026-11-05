@@ -366,6 +366,123 @@ CONTAINER ID   NAME          CPU %     MEM USAGE / LIMIT     MEM %     NET I/O  
 
 ### Dockerfile 기반 커스텀 이미지 제작 및 웹 서버 실행
 
+#### 커스텀 이미지 기반
+- 기반 이미지: nginx
+
+#### 커스텀 포인트 및 목적
+- 이미지 내에 웹서버 접속시 메인으로 띄워주는 index.html 파일을 수정 - 정적인 컨텐츠 변경을 위한 목적
+- 이미지 내에 기본적으로 index.html 이라는 파일을 메인으로 띄워주도록 설정되어있는데 해당 설정을 test_index.html 파일로 바꾸도록 변경 - 설정을 변경하기 위한 목적
+
+
+```
+# Dockfile 커스텀 이미지 제작을 위한 디렉토리 생성
+jsy@JSY:~$ mkdir -p ~/docker-nginx
+cd ~/docker-nginx
+
+# 커스텀 이미지의 정적인 컨텐츠 변경을 위해 index.html 파일 생성
+jsy@JSY:~/docker-nginx$ cat > index.html <<'EOF'
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Custom NGINX</title>
+</head>
+<body>
+    <h1>Hello from my custom NGINX image!</h1>
+    <p>Dockerfile 기반 커스텀 이미지 실습</p>
+</body>
+</html>
+EOF
+jsy@JSY:~/docker-nginx$ ls
+index.html
+jsy@JSY:~/docker-nginx$ cat index.html
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Custom NGINX</title>
+</head>
+<body>
+    <h1>Hello from my custom NGINX image!</h1>
+    <p>Dockerfile 기반 커스텀 이미지 실습</p>
+</body>
+</html>
+
+# 커스텀 이미지의 설정을 변경하기 위해 default.conf 파일 생성
+jsy@JSY:~/docker-nginx$ cat > default.conf <<'EOF'
+server {
+    listen 80;
+    server_name localhost;
+
+    location / {
+        root /usr/share/nginx/html;
+        index test_index.html; # 기존 index.html 이였으나 test_index.html 로 변경
+    }
+}
+EOF
+
+# 최종적으로 커스텀 이미지 생성을 위한 Dockerfile 작성
+jsy@JSY:~/docker-nginx$ cat > Dockerfile <<'EOF'
+FROM nginx:latest
+
+COPY index.html /usr/share/nginx/html/test_index.html # 컨테이너 생성시 test_index.html 이라는 파일을 생성
+COPY default.conf /etc/nginx/conf.d/default.conf
+EOF
+# 파일 3개 확인 가능
+jsy@JSY:~/docker-nginx$ ls
+Dockerfile  default.conf  index.html
+
+# nginx 를 기반으로 한 커스텀 이미지 생성
+jsy@JSY:~/docker-nginx$ docker build -t custom-nginx .
+[+] Building 4.3s (8/8) FINISHED                                                                   docker:desktop-linux
+ => [internal] load build definition from Dockerfile                                                               0.1s
+ => => transferring dockerfile: 154B                                                                               0.0s
+ => [internal] load metadata for docker.io/library/nginx:latest                                                    0.1s
+ => [internal] load .dockerignore                                                                                  0.1s
+ => => transferring context: 2B                                                                                    0.0s
+ => [1/3] FROM docker.io/library/nginx:latest@sha256:5ab5b0b01097420873a3f3330f44248e34a3c2a3e8d5ee30658aeae8cb74  2.6s
+ => => resolve docker.io/library/nginx:latest@sha256:5ab5b0b01097420873a3f3330f44248e34a3c2a3e8d5ee30658aeae8cb74  0.1s
+ => => extracting sha256:6fc242d221a673263eabd14a9ad9584d3177c96e5cb504c891497338e2f912f5                          1.0s
+ => => extracting sha256:a071113ac575190a0fee0c046bcf51632356f07419bdffaa55798f54e5b2e23b                          1.0s
+ => => extracting sha256:9f604dae09b216f6c87919d0e59d5a4ddc4387ef071cf63c645628f93808e37b                          0.0s
+ => => extracting sha256:6e2ab1f3ef4e0ea3bbe1d208dfa048969199e3dab99e93c051b7c2d09c8efb3e                          0.0s
+ => => extracting sha256:c139fe92686de21a8c49d9cb40415d1dddd95fbbee4d696cebe37693236fe6d4                          0.0s
+ => => extracting sha256:d322f1bf41d8e99dc47f550cbf85e79ca18bc45db12fd1b7a8b34bf79cbd7d5a                          0.0s
+ => => extracting sha256:a670537bed7086aeb8b663aad5e09cd584e19c6598cd2b6d905c5f2f2513938b                          0.0s
+ => [internal] load build context                                                                                  0.2s
+ => => transferring context: 456B                                                                                  0.0s
+ => [2/3] COPY index.html /usr/share/nginx/html/index.html                                                         0.4s
+ => [3/3] COPY default.conf /etc/nginx/conf.d/default.conf                                                         0.1s
+ => exporting to image                                                                                             0.6s
+ => => exporting layers                                                                                            0.3s
+ => => exporting manifest sha256:83249349451446a73ee554684e252a07f30756ecaeaaac9fc58176a1917623d3                  0.0s
+ => => exporting config sha256:a8c410494a3cedd3ac7f8d6027fa5c4d97fc98d00511dc41e99aa757173be3e5                    0.0s
+ => => exporting attestation manifest sha256:f8670541af07621975f9229a03bee1ae50a9fbdcea4528f6cad0d7a229cbb466      0.1s
+ => => exporting manifest list sha256:f563fbdbae9c6c52c328eb4dcf82db6791bb9eafaf62ac6222352b38645cbd2c             0.0s
+ => => naming to docker.io/library/custom-nginx:latest                                                             0.0s
+ => => unpacking to docker.io/library/custom-nginx:latest                                                          0.1s
+
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/4cneaps73a9wigfkdq2e4mw5g
+
+# 아래는 파워 쉘 명령어 커스텀 이미지가 정상적으로 생성된것을 확인
+PS C:\Users\works> docker images
+                                                                                                    i Info →   U  In Use
+IMAGE                             ID             DISK USAGE   CONTENT SIZE   EXTRA
+custom-nginx:latest               f563fbdbae9c        241MB         63.9MB
+docker/welcome-to-docker:latest   c4d56c24da4f       22.2MB         6.03MB
+hello-world:latest                c567b231f656       25.9kB         9.49kB    U
+nginx:latest                      5ab5b0b01097        243MB         66.8MB
+ubuntu:latest                     6a06111c3b0a        163MB         45.9MB    U
+
+PS C:\Users\works> docker run -d --name custom-nginx-container -p 4000:80 custom-nginx
+50e7fe9b28bc0758071ae409e1e8ae7f1317d955a589c27ba2d782d61cb1123c
+
+PS C:\Users\works> docker ps
+CONTAINER ID   IMAGE          COMMAND                  CREATED             STATUS             PORTS                                     NAMES
+50e7fe9b28bc   custom-nginx   "/docker-entrypoint.…"   4 seconds ago       Up 5 seconds       0.0.0.0:4000->80/tcp, [::]:4000->80/tcp   custom-nginx-container
+449035724ae3   ubuntu         "/bin/bash"              About an hour ago   Up About an hour   
+
+```
 
 
 ### 포트 매핑을 통한 서비스 접속 검증
