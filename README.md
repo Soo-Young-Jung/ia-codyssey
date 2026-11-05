@@ -47,7 +47,70 @@ Git/GitHub를 활용한 버전 관리 및 저장소 연동
 
 ## 4. 검증
 
+- Linux CLI를 활용한 파일·디렉토리 관리 및 권한 설정
+```
+jsy@JSY:~$ # 현재 위치 확인
+jsy@JSY:~$ pwd
+/home/jsy
 
+jsy@JSY:~$ # 목록 확인(숨김 파일 포함)
+jsy@JSY:~$ ls -a
+.  ..  .bash_history  .bash_logout  .bashrc  .cache  .config  .motd_shown  .profile
+
+jsy@JSY:~$ # 빈 파일 생성(파일 생성)
+jsy@JSY:~$ touch test.txt
+jsy@JSY:~$ ls
+test.txt
+
+jsy@JSY:~$ # 파일 내용 확인(빈 텍스트 파일이므로 내용물은 없음)
+jsy@JSY:~$ cat test.txt
+
+jsy@JSY:~$ # 파일 복사
+jsy@JSY:~$ cp test.txt test2.txt
+jsy@JSY:~$ ls
+test.txt  test2.txt
+
+jsy@JSY:~$ mkdir test_folder # 파일 이동 검증을 위해 임시 폴더 생성
+
+
+jsy@JSY:~$ # 이동
+jsy@JSY:~$ mv test2.txt test_folder/
+jsy@JSY:~$ ls
+test.txt  test_folder
+jsy@JSY:~$ cd test_folder/
+jsy@JSY:~/test_folder$ ls
+test2.txt
+
+jsy@JSY:~/test_folder$ # 파일 이름 변경
+jsy@JSY:~/test_folder$ mv test2.txt test3.txt
+jsy@JSY:~/test_folder$ ls
+test3.txt
+
+jsy@JSY:~/test_folder$ cd ..  # 파일 삭제를 위해 상위 디렉토리로 이동
+
+jsy@JSY:~$ # 삭제(test.txt 파일을 삭제)
+jsy@JSY:~$ rm test.txt
+jsy@JSY:~$ ls
+test_folder   # test.txt 파일 삭제됬음을 확인
+```
+- Docker 설치 및 컨테이너 실행·관리
+
+
+
+
+
+- Dockerfile 기반 커스텀 이미지 제작 및 웹 서버 실행
+
+
+
+- 포트 매핑을 통한 서비스 접속 검증
+
+
+
+- 바인드 마운트 및 Docker 볼륨의 동작과 데이터 영속성 검증
+
+
+- Git/GitHub를 활용한 버전 관리 및 저장소 연동
 
 
 
