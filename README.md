@@ -549,11 +549,7 @@ exit
 
 #### Git 사용자 정보/기본 브랜치 설정
 ```
-PS C:\Users\works> git config --global user.name "Soo-Young-Jung"
-PS C:\Users\works> git config --global user.email "kscorponok@gmail.com"
-PS C:\Users\works> git config --global init.defaultBranch main
-
-PS C:\Users\works> git config --list
+$ git config --list
 diff.astextplain.textconv=astextplain
 filter.lfs.clean=git-lfs clean -- %f
 filter.lfs.smudge=git-lfs smudge -- %f
@@ -571,6 +567,28 @@ core.editor="C:\Users\works\AppData\Local\Programs\Microsoft VS Code\bin\code" -
 user.name=Soo-Young-Jung
 user.email=kscorponok@gmail.com
 init.defaultbranch=main
+core.repositoryformatversion=0
+core.filemode=false
+core.bare=false
+core.logallrefupdates=true
+core.symlinks=false
+core.ignorecase=true
+remote.origin.url=https://github.com/Soo-Young-Jung/ia-codyssey
+remote.origin.fetch=+refs/heads/*:refs/remotes/origin/*
+
+$ git remote -v
+origin  https://github.com/Soo-Young-Jung/ia-codyssey (fetch)
+origin  https://github.com/Soo-Young-Jung/ia-codyssey (push)
+
+
+$ git log
+commit 9b24057d8f3dd6d5ab82f7d45ecbc625240498b0 (HEAD -> main)
+Author: Soo-Young-Jung <kscorponok@gmail.com>
+Date:   Mon Nov 9 15:14:40 2026 +0900
+
+    test
+
+
 ```
 
 
